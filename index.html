@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>NutriSync</title>
   <style>
+    /* ----------------------------------
+       GLOBAL / BASIC STYLES
+    -------------------------------------*/
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
     
     body {
@@ -12,21 +15,48 @@
       text-align: center;
       background-color: #f8f9fa;
       color: #333;
-      padding: 50px;
       margin: 0;
+      padding: 50px;
     }
     .container {
       max-width: 90%;
-      width: 100%;
       margin: auto;
       background: white;
       padding: 5%;
       border-radius: 14px;
       box-shadow: 0 5px 14px rgba(0, 0, 0, 0.2);
+      margin-bottom: 20px;
     }
     .hidden {
       display: none;
     }
+    .button {
+      padding: 15px 25px;
+      font-size: 16px;
+      color: white;
+      background: #28a745;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+      margin-top: 15px;
+    }
+    .button:hover {
+      background: #218838;
+    }
+    input, select {
+      padding: 12px;
+      width: calc(100% - 24px);
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      display: block;
+    }
+
+    /* ----------------------------------
+       ALLERGY / MEAT FILTER STYLES
+    -------------------------------------*/
     .option {
       padding: 15px;
       background: #f8f9fa;
@@ -39,26 +69,8 @@
       border: 1px solid #007bff;
     }
     .option.selected {
-        background: #007bff;
-        color: white;
-    }
-    .button {
-      display: block;
-      width: 100%;
-      padding: 15px;
-      font-size: 16px;
+      background: #007bff;
       color: white;
-      background: #28a745;
-      text-decoration: none;
-      border-radius: 7px;
-      transition: 0.3s;
-      margin-top: 15px;
-      font-weight: bold;
-      border: none;
-      cursor: pointer;
-    }
-    .button:hover {
-      background: #218838;
     }
     .options .option {
       padding: 12px;
@@ -67,18 +79,83 @@
       cursor: pointer;
       transition: 0.3s;
     }
-    input {
-      padding: 12px;
-      width: calc(100% - 24px);
-      margin: 10px 0;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      display: block;
-    }
     .options .option:hover, .options .option.selected {
-      background:#218838;
+      background: #218838;
       color: white;
     }
+
+    /* ----------------------------------
+       RECIPE CARDS
+    -------------------------------------*/
+    .recipe-card {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 15px;
+      text-align: left;
+      transition: transform 0.3s ease-in-out, box-shadow 0.3s;
+      cursor: pointer;
+    }
+    .recipe-card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+    }
+    .recipe-title {
+      font-size: 18px;
+      color: #070808;
+      margin-bottom: 10px;
+    }
+
+    /* ----------------------------------
+       MODAL STYLES
+    -------------------------------------*/
+    .ns-modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .ns-modal.hidden {
+      display: none; /* Hide by default */
+    }
+    .ns-modal-overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+    }
+    .ns-modal-content {
+      position: relative;
+      background: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+      max-width: 500px;
+      width: 90%;
+      animation: fadeIn 0.3s ease;
+      z-index: 2; /* above overlay */
+      text-align: left;
+    }
+    .ns-modal-close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 28px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ----------------------------------
+       MEDIA QUERIES
+    -------------------------------------*/
     @media (max-width: 768px) {
       .container {
         padding: 20px;
@@ -94,30 +171,52 @@
     }
   </style>
 </head>
+
 <body>
 
-<!-- Sign-In Page -->
-<div id="login" class="container">
-  <h1>Sign In to NutriSync</h1>
-  <input type="email" id="email" placeholder="Enter your Gmail" required>
-  <input type="password" id="password" placeholder="Enter Password" required>
-  <a href="#" class="button" onclick="validateLogin()">Sign In</a>
-</div>
+  <!-- WELCOME PAGE -->
+  <div id="welcome" class="container">
+    <img src="file:///C:/Users/sheed/Downloads/Nutrisync%20Folder/NutriSync_Logo.png.jpg" 
+         alt="NutriSync Logo" style="max-width: 250px; margin-bottom: 20px;">
+    <h1>Welcome to NutriSync</h1>
+    <p>Your personalized nutrition recommendation system</p>
+    <button class="button" onclick="navigate('login')">Get Started</button>
+  </div>
 
-<script>
-  function validateLogin() {
-    let email = document.getElementById("email").value;
-    let password = document.getElementById("password").value;
-    if (email.trim() === "" || !email.includes("@gmail.com") || password.trim() === "") {
-      alert("Please enter a valid Gmail and password.");
-    } else {
-      document.getElementById("login").classList.add("hidden");
-      document.getElementById("allergy-filter").classList.remove("hidden");
-    }
-  }
-</script>
+  <!-- SIGN-IN PAGE -->
+  <div id="login" class="container hidden">
+    <h1>Sign In to NutriSync</h1>
+    <input type="email" id="email" placeholder="Enter your Gmail" required />
+    <input type="password" id="password" placeholder="Enter Password" required />
+    <button class="button" onclick="validateLogin()">Sign In</button>
+  </div>
 
-<div id="allergy-filter" class="container hidden">
+  <!-- AGE SELECTION PAGE -->
+  <div id="age-selection" class="container hidden">
+    <h1>Select Your Age</h1>
+    <select id="age">
+      <option value="" disabled selected>Select Age</option>
+      <!-- We'll populate this in JS -->
+    </select>
+    <button class="button" onclick="proceedToWeight()">Next</button>
+  </div>
+
+  <!-- WEIGHT INPUT PAGE -->
+  <div id="weight-input" class="container hidden">
+    <h1>Enter Your Weight (kg)</h1>
+    <input type="number" id="weight" placeholder="Enter your weight" min="1" required />
+    <button class="button" onclick="proceedToStats()">Next</button>
+  </div>
+
+  <!-- STATS PAGE -->
+  <div id="stats" class="container hidden">
+    <h1>Your Stats</h1>
+    <p id="stats-text"></p>
+    <button class="button" onclick="navigate('allergy-filter')">Proceed</button>
+  </div>
+
+  <!-- ALLERGY FILTER PAGE -->
+  <div id="allergy-filter" class="container hidden">
     <h1>Select Your Allergies</h1>
     <div class="options">
       <div class="option" onclick="toggleSelection(this, 'selectedAllergy', 'peanuts')">Peanuts</div>
@@ -127,198 +226,894 @@
       <div class="option" onclick="toggleSelection(this, 'selectedAllergy', 'eggs')">Eggs</div>
       <div class="option" onclick="toggleSelection(this, 'selectedAllergy', 'none')">No Allergies</div>
     </div>
-    <a href="#" class="button" onclick="navigate('meat-filter')">Confirm</a>
+    <button class="button" onclick="navigate('meat-filter')">Confirm</button>
   </div>
-  
+
+  <!-- MEAT FILTER PAGE -->
   <div id="meat-filter" class="container hidden">
     <h1>Select Your Preferred Meat</h1>
     <div class="options">
-      <div class="option" onclick="toggleSelection(this, 'selectedMeat', 'pork')">Pork</div>
       <div class="option" onclick="toggleSelection(this, 'selectedMeat', 'chicken')">Chicken</div>
       <div class="option" onclick="toggleSelection(this, 'selectedMeat', 'beef')">Beef</div>
+      <div class="option" onclick="toggleSelection(this, 'selectedMeat', 'pork')">Pork</div>
       <div class="option" onclick="toggleSelection(this, 'selectedMeat', 'seafood')">Seafood</div>
       <div class="option" onclick="toggleSelection(this, 'selectedMeat', 'vegetables')">Vegetables</div>
     </div>
-    <a href="#" class="button" onclick="navigate('recipes')">Confirm</a>
+    <button class="button" onclick="navigate('recipes')">Confirm</button>
   </div>
-  
+
+  <!-- RECIPES PAGE -->
   <div id="recipes" class="container hidden">
     <h1>Recommended Recipes</h1>
     <div id="recipes-container"></div>
-    <a href="#" class="button" onclick="navigate('login')">Restart</a>
+    <button class="button" onclick="navigate('login')">Restart</button>
   </div>
-  
+
+  <!-- RECIPE DETAILS PORTAL -->
+  <div id="recipe-portal" class="container hidden">
+    <h1 id="portal-title"></h1>
+    <h3>Ingredients:</h3>
+    <ul id="portal-ingredients"></ul>
+    <h3>Procedure:</h3>
+    <ol id="portal-procedure"></ol>
+
+    <!-- Button to open the nutritional modal -->
+    <button class="button" onclick="showNutrition()">View Nutritional Content</button>
+    <button class="button" onclick="navigate('recipes')">Back to Recipes</button>
+  </div>
+
+  <!-- NUTRITIONAL POP-UP MODAL (Initially hidden) -->
+  <div id="nutritional-modal" class="ns-modal hidden">
+    <!-- Dark overlay: clicking it also closes the modal -->
+    <div class="ns-modal-overlay" onclick="closeNutrition()"></div>
+    <!-- Actual modal content -->
+    <div class="ns-modal-content">
+      <span class="ns-modal-close" onclick="closeNutrition()">&times;</span>
+      <h2>Nutritional Content</h2>
+      <div id="nutrition-details"></div>
+    </div>
+  </div>
+
   <script>
+    // -----------------------------------------
+    // 1) GLOBAL RECIPE DATA (50 FILIPINO RECIPES)
+    // -----------------------------------------
+    const allRecipes = [
+      // Chicken (10)
+      {
+        name: "Chicken Adobo",
+        meat: "chicken",
+        ingredients: ["Chicken", "Soy sauce", "Vinegar", "Garlic", "Bay leaves"],
+        allergies: [],
+        procedure: [
+          "Marinate chicken in soy sauce and garlic.",
+          "Simmer with vinegar and bay leaves.",
+          "Serve with rice."
+        ],
+        nutrition: { calories: 300, protein: "25g", fat: "10g", carbs: "5g" }
+      },
+      {
+        name: "Tinolang Manok",
+        meat: "chicken",
+        ingredients: ["Chicken", "Ginger", "Papaya", "Malunggay leaves"],
+        allergies: [],
+        procedure: [
+          "Sauté ginger and chicken.",
+          "Add water and simmer.",
+          "Add papaya and malunggay leaves.",
+          "Cook until tender."
+        ],
+        nutrition: { calories: 280, protein: "27g", fat: "8g", carbs: "10g" }
+      },
+      {
+        name: "Chicken Inasal",
+        meat: "chicken",
+        ingredients: ["Chicken", "Lemongrass", "Calamansi", "Soy sauce"],
+        allergies: [],
+        procedure: [
+          "Marinate chicken with calamansi and spices.",
+          "Grill until cooked.",
+          "Serve with rice and vinegar dip."
+        ],
+        nutrition: { calories: 370, protein: "30g", fat: "12g", carbs: "8g" }
+      },
+      {
+        name: "Arroz Caldo",
+        meat: "chicken",
+        ingredients: ["Chicken", "Rice", "Ginger", "Garlic", "Egg"],
+        allergies: ["eggs"],
+        procedure: [
+          "Sauté garlic and ginger with chicken.",
+          "Add rice and broth; simmer until thick.",
+          "Garnish with boiled egg."
+        ],
+        nutrition: { calories: 350, protein: "22g", fat: "8g", carbs: "55g" }
+      },
+      {
+        name: "Chicken Afritada",
+        meat: "chicken",
+        ingredients: ["Chicken", "Tomato sauce", "Potatoes", "Carrots", "Bell peppers"],
+        allergies: [],
+        procedure: [
+          "Brown chicken.",
+          "Add tomato sauce and vegetables.",
+          "Simmer until chicken is cooked.",
+          "Serve hot."
+        ],
+        nutrition: { calories: 350, protein: "28g", fat: "12g", carbs: "25g" }
+      },
+      {
+        name: "Binakol Manok",
+        meat: "chicken",
+        ingredients: ["Chicken", "Coconut water", "Ginger", "Papaya", "Chili leaves"],
+        allergies: [],
+        procedure: [
+          "Boil chicken in coconut water with ginger.",
+          "Add papaya and chili leaves.",
+          "Simmer until flavors meld."
+        ],
+        nutrition: { calories: 360, protein: "29g", fat: "11g", carbs: "20g" }
+      },
+      {
+        name: "Chicken Pastel",
+        meat: "chicken",
+        ingredients: ["Chicken", "Mushrooms", "Carrots", "Cream"],
+        allergies: ["dairy"],
+        procedure: [
+          "Sauté chicken with mushrooms and carrots.",
+          "Add cream and simmer until sauce thickens.",
+          "Serve with rice."
+        ],
+        nutrition: { calories: 420, protein: "30g", fat: "18g", carbs: "22g" }
+      },
+      {
+        name: "Chicken Sotanghon Soup",
+        meat: "chicken",
+        ingredients: ["Chicken", "Sotanghon noodles", "Garlic", "Carrots"],
+        allergies: ["gluten"],
+        procedure: [
+          "Sauté garlic and chicken.",
+          "Add broth and noodles.",
+          "Cook until noodles are soft.",
+          "Serve hot."
+        ],
+        nutrition: { calories: 290, protein: "22g", fat: "6g", carbs: "35g" }
+      },
+      {
+        name: "Chicken Binakol Soup",
+        meat: "chicken",
+        ingredients: ["Chicken", "Buko (young coconut)", "Ginger", "Papaya"],
+        allergies: [],
+        procedure: [
+          "Boil chicken with coconut water and ginger.",
+          "Add papaya and simmer until chicken is tender.",
+          "Garnish with green onions."
+        ],
+        nutrition: { calories: 340, protein: "26g", fat: "9g", carbs: "30g" }
+      },
+      {
+        name: "Chicken Paksiw",
+        meat: "chicken",
+        ingredients: ["Chicken", "Vinegar", "Garlic", "Bay leaves", "Soy sauce"],
+        allergies: [],
+        procedure: [
+          "Marinate chicken in vinegar and garlic.",
+          "Simmer with bay leaves and soy sauce.",
+          "Cook until tender.",
+          "Serve with rice."
+        ],
+        nutrition: { calories: 330, protein: "24g", fat: "10g", carbs: "15g" }
+      },
+
+      // Beef (10)
+      {
+        name: "Beef Caldereta",
+        meat: "beef",
+        ingredients: ["Beef", "Tomato sauce", "Potatoes", "Bell peppers", "Olives"],
+        allergies: [],
+        procedure: [
+          "Brown beef.",
+          "Add tomato sauce, potatoes, and bell peppers.",
+          "Simmer until beef is tender.",
+          "Garnish with olives."
+        ],
+        nutrition: { calories: 460, protein: "32g", fat: "18g", carbs: "22g" }
+      },
+      {
+        name: "Beef Bulalo",
+        meat: "beef",
+        ingredients: ["Beef shank", "Corn", "Cabbage", "Onions"],
+        allergies: [],
+        procedure: [
+          "Boil beef shank until tender.",
+          "Add corn and cabbage.",
+          "Simmer until vegetables are cooked.",
+          "Serve hot."
+        ],
+        nutrition: { calories: 500, protein: "40g", fat: "20g", carbs: "25g" }
+      },
+      {
+        name: "Kare-Kare",
+        meat: "beef",
+        ingredients: ["Beef", "Peanut sauce", "Banana blossoms", "Eggplant"],
+        allergies: ["peanuts"],
+        procedure: [
+          "Boil beef until tender.",
+          "Prepare peanut sauce.",
+          "Combine beef, banana blossoms, and eggplant with sauce.",
+          "Serve with bagoong."
+        ],
+        nutrition: { calories: 480, protein: "35g", fat: "22g", carbs: "15g" }
+      },
+      {
+        name: "Beef Tapa",
+        meat: "beef",
+        ingredients: ["Beef", "Soy sauce", "Garlic", "Sugar"],
+        allergies: [],
+        procedure: [
+          "Marinate beef with soy sauce, garlic, and sugar.",
+          "Pan-fry until crispy.",
+          "Serve with rice and egg."
+        ],
+        nutrition: { calories: 420, protein: "38g", fat: "12g", carbs: "20g" }
+      },
+      {
+        name: "Bistek Tagalog",
+        meat: "beef",
+        ingredients: ["Beef", "Soy sauce", "Calamansi", "Onions"],
+        allergies: [],
+        procedure: [
+          "Marinate beef in soy sauce and calamansi.",
+          "Sauté beef with onions.",
+          "Simmer until tender.",
+          "Serve with rice."
+        ],
+        nutrition: { calories: 430, protein: "30g", fat: "15g", carbs: "10g" }
+      },
+      {
+        name: "Beef Mechado",
+        meat: "beef",
+        ingredients: ["Beef", "Tomato sauce", "Potatoes", "Carrots"],
+        allergies: [],
+        procedure: [
+          "Brown beef chunks.",
+          "Add tomato sauce and vegetables.",
+          "Simmer until beef is tender.",
+          "Serve hot."
+        ],
+        nutrition: { calories: 450, protein: "30g", fat: "15g", carbs: "20g" }
+      },
+      {
+        name: "Beef Pares",
+        meat: "beef",
+        ingredients: ["Beef", "Soy sauce", "Sugar", "Star anise"],
+        allergies: [],
+        procedure: [
+          "Slow cook beef with soy sauce, sugar, and star anise.",
+          "Serve with rice and broth."
+        ],
+        nutrition: { calories: 500, protein: "35g", fat: "18g", carbs: "30g" }
+      },
+      {
+        name: "Beef Embutido",
+        meat: "beef",
+        ingredients: ["Ground beef", "Carrots", "Eggs", "Raisins", "Bread crumbs"],
+        allergies: ["eggs"],
+        procedure: [
+          "Mix ground beef with shredded carrots, eggs, raisins, and bread crumbs.",
+          "Bake until set.",
+          "Slice and serve."
+        ],
+        nutrition: { calories: 480, protein: "32g", fat: "16g", carbs: "25g" }
+      },
+      {
+        name: "Binagoongan Beef",
+        meat: "beef",
+        ingredients: ["Beef", "Shrimp paste", "Tomatoes", "Onions", "Garlic"],
+        allergies: [],
+        procedure: [
+          "Sauté beef with garlic and onions.",
+          "Add tomatoes and shrimp paste.",
+          "Simmer until flavors meld.",
+          "Serve with rice."
+        ],
+        nutrition: { calories: 470, protein: "34g", fat: "17g", carbs: "22g" }
+      },
+      {
+        name: "Beef Pares Special",
+        meat: "beef",
+        ingredients: ["Beef", "Soy sauce", "Garlic", "Sugar", "Ginger"],
+        allergies: [],
+        procedure: [
+          "Marinate beef in soy sauce, garlic, and ginger.",
+          "Slow cook until tender.",
+          "Serve with broth and rice."
+        ],
+        nutrition: { calories: 510, protein: "36g", fat: "19g", carbs: "28g" }
+      },
+
+      // Pork (10)
+      {
+        name: "Pork Sinigang",
+        meat: "pork",
+        ingredients: ["Pork ribs", "Tamarind", "Radish", "Tomatoes", "Okra"],
+        allergies: [],
+        procedure: [
+          "Boil pork ribs in water with tamarind.",
+          "Add radish, tomatoes, and okra.",
+          "Simmer until vegetables are tender.",
+          "Serve hot."
+        ],
+        nutrition: { calories: 350, protein: "28g", fat: "12g", carbs: "15g" }
+      },
+      {
+        name: "Lechon Kawali",
+        meat: "pork",
+        ingredients: ["Pork belly", "Salt", "Pepper", "Garlic"],
+        allergies: [],
+        procedure: [
+          "Boil pork belly until tender.",
+          "Deep-fry until crispy.",
+          "Season with salt and pepper.",
+          "Serve with dipping sauce."
+        ],
+        nutrition: { calories: 550, protein: "32g", fat: "40g", carbs: "5g" }
+      },
+      {
+        name: "Humba",
+        meat: "pork",
+        ingredients: ["Pork belly", "Soy sauce", "Sugar", "Banana blossoms"],
+        allergies: [],
+        procedure: [
+          "Sauté pork with soy sauce and sugar.",
+          "Simmer until tender.",
+          "Mix in banana blossoms.",
+          "Serve with rice."
+        ],
+        nutrition: { calories: 490, protein: "26g", fat: "28g", carbs: "22g" }
+      },
+      {
+        name: "Pork BBQ",
+        meat: "pork",
+        ingredients: ["Pork", "Soy sauce", "Sugar", "Garlic"],
+        allergies: [],
+        procedure: [
+          "Marinate pork in a mixture of soy sauce, sugar, and garlic.",
+          "Grill until charred and cooked.",
+          "Serve with dipping sauce."
+        ],
+        nutrition: { calories: 480, protein: "28g", fat: "20g", carbs: "15g" }
+      },
+      {
+        name: "Crispy Pata",
+        meat: "pork",
+        ingredients: ["Pork leg", "Garlic", "Vinegar", "Salt"],
+        allergies: [],
+        procedure: [
+          "Boil pork leg until tender.",
+          "Deep-fry until crispy.",
+          "Season with salt.",
+          "Serve with vinegar dipping sauce."
+        ],
+        nutrition: { calories: 600, protein: "40g", fat: "45g", carbs: "5g" }
+      },
+      {
+        name: "Pork Dinuguan",
+        meat: "pork",
+        ingredients: ["Pork", "Pig's blood", "Vinegar", "Garlic", "Onions"],
+        allergies: [],
+        procedure: [
+          "Sauté pork with garlic and onions.",
+          "Add pig’s blood and vinegar.",
+          "Simmer until thick.",
+          "Serve with rice."
+        ],
+        nutrition: { calories: 460, protein: "32g", fat: "22g", carbs: "8g" }
+      },
+      {
+        name: "Pork Adobo",
+        meat: "pork",
+        ingredients: ["Pork", "Soy sauce", "Vinegar", "Garlic", "Bay leaves"],
+        allergies: [],
+        procedure: [
+          "Marinate pork in soy sauce and vinegar.",
+          "Simmer with garlic and bay leaves until tender.",
+          "Serve with rice."
+        ],
+        nutrition: { calories: 440, protein: "30g", fat: "18g", carbs: "12g" }
+      },
+      {
+        name: "Inihaw na Baboy",
+        meat: "pork",
+        ingredients: ["Pork", "Calamansi", "Salt", "Pepper"],
+        allergies: [],
+        procedure: [
+          "Marinate pork in calamansi juice, salt, and pepper.",
+          "Grill until cooked and slightly charred.",
+          "Serve with vinegar sauce."
+        ],
+        nutrition: { calories: 430, protein: "29g", fat: "16g", carbs: "10g" }
+      },
+      {
+        name: "Pork Menudo",
+        meat: "pork",
+        ingredients: ["Pork", "Liver", "Potatoes", "Carrots", "Tomato sauce"],
+        allergies: [],
+        procedure: [
+          "Sauté pork and liver with garlic.",
+          "Add tomato sauce and vegetables.",
+          "Simmer until tender.",
+          "Serve hot."
+        ],
+        nutrition: { calories: 480, protein: "33g", fat: "20g", carbs: "18g" }
+      },
+      {
+        name: "Pork Embutido",
+        meat: "pork",
+        ingredients: ["Ground pork", "Carrots", "Eggs", "Raisins", "Bread crumbs"],
+        allergies: ["eggs"],
+        procedure: [
+          "Mix ground pork with grated carrots, eggs, raisins, and bread crumbs.",
+          "Bake until firm.",
+          "Slice and serve."
+        ],
+        nutrition: { calories: 470, protein: "31g", fat: "22g", carbs: "20g" }
+      },
+
+      // Seafood (10)
+      {
+        name: "Ginataang Hipon",
+        meat: "seafood",
+        ingredients: ["Shrimp", "Coconut milk", "Ginger", "Garlic"],
+        allergies: ["seafood"],
+        procedure: [
+          "Sauté garlic and ginger.",
+          "Add shrimp and coconut milk.",
+          "Simmer until shrimp are cooked.",
+          "Serve with rice."
+        ],
+        nutrition: { calories: 320, protein: "35g", fat: "18g", carbs: "8g" }
+      },
+      {
+        name: "Sinigang na Hipon",
+        meat: "seafood",
+        ingredients: ["Shrimp", "Tamarind", "Kangkong", "Tomatoes"],
+        allergies: [],
+        procedure: [
+          "Boil shrimp with tamarind and tomatoes.",
+          "Add kangkong.",
+          "Simmer until flavors blend.",
+          "Serve hot."
+        ],
+        nutrition: { calories: 280, protein: "30g", fat: "5g", carbs: "15g" }
+      },
+      {
+        name: "Adobong Pusit",
+        meat: "seafood",
+        ingredients: ["Squid", "Soy sauce", "Vinegar", "Garlic"],
+        allergies: [],
+        procedure: [
+          "Sauté garlic with squid.",
+          "Add soy sauce and vinegar.",
+          "Simmer until squid is tender.",
+          "Serve with rice."
+        ],
+        nutrition: { calories: 290, protein: "40g", fat: "8g", carbs: "6g" }
+      },
+      {
+        name: "Grilled Salmon",
+        meat: "seafood",
+        ingredients: ["Salmon", "Lemon", "Garlic", "Olive oil"],
+        allergies: [],
+        procedure: [
+          "Marinate salmon with lemon, garlic, and olive oil.",
+          "Grill until cooked.",
+          "Serve with vegetables."
+        ],
+        nutrition: { calories: 450, protein: "40g", fat: "20g", carbs: "5g" }
+      },
+      {
+        name: "Tuna Poke Bowl",
+        meat: "seafood",
+        ingredients: ["Tuna", "Soy sauce", "Sesame oil", "Avocado", "Rice"],
+        allergies: ["soy"],
+        procedure: [
+          "Marinate tuna in soy sauce and sesame oil.",
+          "Serve over rice with avocado.",
+          "Garnish as desired."
+        ],
+        nutrition: { calories: 420, protein: "38g", fat: "15g", carbs: "40g" }
+      },
+      {
+        name: "Seafood Paella",
+        meat: "seafood",
+        ingredients: ["Shrimp", "Mussels", "Rice", "Tomato", "Saffron"],
+        allergies: [],
+        procedure: [
+          "Cook rice with tomatoes and saffron.",
+          "Add shrimp and mussels.",
+          "Simmer until seafood is cooked.",
+          "Serve hot."
+        ],
+        nutrition: { calories: 480, protein: "42g", fat: "14g", carbs: "55g" }
+      },
+      {
+        name: "Inihaw na Isda",
+        meat: "seafood",
+        ingredients: ["Fish", "Calamansi", "Salt", "Pepper"],
+        allergies: [],
+        procedure: [
+          "Marinate fish in calamansi juice, salt, and pepper.",
+          "Grill until cooked.",
+          "Serve with dipping sauce."
+        ],
+        nutrition: { calories: 400, protein: "38g", fat: "12g", carbs: "8g" }
+      },
+      {
+        name: "Escabeche",
+        meat: "seafood",
+        ingredients: ["Fish", "Vinegar", "Sugar", "Bell peppers", "Carrots"],
+        allergies: [],
+        procedure: [
+          "Fry fish until golden.",
+          "Prepare a sauce with vinegar, sugar, and vegetables.",
+          "Pour sauce over fish.",
+          "Serve cold."
+        ],
+        nutrition: { calories: 410, protein: "36g", fat: "12g", carbs: "25g" }
+      },
+      {
+        name: "Sinigang na Isda",
+        meat: "seafood",
+        ingredients: ["Fish", "Tamarind", "Radish", "Tomatoes", "Kangkong"],
+        allergies: [],
+        procedure: [
+          "Boil fish with tamarind and tomatoes.",
+          "Add radish and kangkong.",
+          "Simmer until fish is cooked.",
+          "Serve hot."
+        ],
+        nutrition: { calories: 390, protein: "35g", fat: "10g", carbs: "20g" }
+      },
+      {
+        name: "Fish Tinola",
+        meat: "seafood",
+        ingredients: ["Fish", "Ginger", "Papaya", "Spinach"],
+        allergies: [],
+        procedure: [
+          "Sauté ginger.",
+          "Add fish and water.",
+          "Add papaya and spinach.",
+          "Simmer until fish is tender.",
+          "Serve hot."
+        ],
+        nutrition: { calories: 350, protein: "33g", fat: "9g", carbs: "18g" }
+      },
+
+      // Vegetables (10)
+      {
+        name: "Pinakbet",
+        meat: "vegetables",
+        ingredients: ["Eggplant", "Okra", "Bitter melon", "Tomatoes", "Shrimp paste"],
+        allergies: [],
+        procedure: [
+          "Sauté vegetables with shrimp paste.",
+          "Add water and simmer until tender.",
+          "Serve hot with rice."
+        ],
+        nutrition: { calories: 200, protein: "8g", fat: "5g", carbs: "30g" }
+      },
+      {
+        name: "Laing",
+        meat: "vegetables",
+        ingredients: ["Taro leaves", "Coconut milk", "Chili peppers"],
+        allergies: ["coconut"],
+        procedure: [
+          "Cook taro leaves in coconut milk.",
+          "Add chili peppers.",
+          "Simmer until creamy.",
+          "Serve with rice."
+        ],
+        nutrition: { calories: 310, protein: "10g", fat: "20g", carbs: "25g" }
+      },
+      {
+        name: "Ginisang Monggo",
+        meat: "vegetables",
+        ingredients: ["Mung beans", "Garlic", "Tomatoes", "Spinach"],
+        allergies: [],
+        procedure: [
+          "Boil mung beans until soft.",
+          "Sauté garlic and tomatoes.",
+          "Mix in spinach.",
+          "Simmer and serve."
+        ],
+        nutrition: { calories: 280, protein: "18g", fat: "5g", carbs: "35g" }
+      },
+      {
+        name: "Ginisang Sayote",
+        meat: "vegetables",
+        ingredients: ["Sayote", "Garlic", "Onions", "Soy sauce"],
+        allergies: [],
+        procedure: [
+          "Sauté garlic and onions.",
+          "Add sayote and soy sauce.",
+          "Cook until tender.",
+          "Serve hot."
+        ],
+        nutrition: { calories: 200, protein: "5g", fat: "2g", carbs: "40g" }
+      },
+      {
+        name: "Chopsuey",
+        meat: "vegetables",
+        ingredients: ["Cabbage", "Carrots", "Bell peppers", "Cauliflower", "Soy sauce"],
+        allergies: ["soy"],
+        procedure: [
+          "Stir-fry all vegetables.",
+          "Add soy sauce and seasoning.",
+          "Cook until vegetables are crisp-tender.",
+          "Serve hot."
+        ],
+        nutrition: { calories: 250, protein: "8g", fat: "5g", carbs: "40g" }
+      },
+      {
+        name: "Lumpiang Sariwa",
+        meat: "vegetables",
+        ingredients: ["Lettuce", "Carrots", "Cabbage", "Peanut sauce", "Wrapper"],
+        allergies: ["peanuts"],
+        procedure: [
+          "Fill wrapper with fresh vegetables.",
+          "Roll tightly.",
+          "Drizzle with peanut sauce.",
+          "Serve fresh."
+        ],
+        nutrition: { calories: 300, protein: "12g", fat: "10g", carbs: "50g" }
+      },
+      {
+        name: "Ensaladang Mangga",
+        meat: "vegetables",
+        ingredients: ["Green mango", "Tomatoes", "Onions", "Bagoong"],
+        allergies: [],
+        procedure: [
+          "Slice green mango, tomatoes, and onions.",
+          "Mix with bagoong.",
+          "Serve as a side dish."
+        ],
+        nutrition: { calories: 150, protein: "3g", fat: "5g", carbs: "25g" }
+      },
+      {
+        name: "Ginisang Ampalaya",
+        meat: "vegetables",
+        ingredients: ["Bitter melon", "Egg", "Garlic", "Onions"],
+        allergies: ["eggs"],
+        procedure: [
+          "Sauté garlic and onions.",
+          "Add bitter melon and stir-fry.",
+          "Crack egg and mix well.",
+          "Serve hot."
+        ],
+        nutrition: { calories: 220, protein: "7g", fat: "6g", carbs: "30g" }
+      },
+      {
+        name: "Chopsuey Tagalog",
+        meat: "vegetables",
+        ingredients: ["Mixed vegetables", "Soy sauce", "Garlic", "Onions", "Cornstarch"],
+        allergies: ["soy"],
+        procedure: [
+          "Stir-fry mixed vegetables with garlic and onions.",
+          "Add soy sauce.",
+          "Thicken with cornstarch slurry.",
+          "Serve hot."
+        ],
+        nutrition: { calories: 240, protein: "8g", fat: "5g", carbs: "35g" }
+      },
+      {
+        name: "Pinakbet with Shrimp",
+        meat: "vegetables",
+        ingredients: ["Bitter melon", "Eggplant", "Okra", "Tomatoes", "Shrimp", "Shrimp paste"],
+        allergies: ["seafood"],
+        procedure: [
+          "Sauté vegetables with shrimp paste.",
+          "Add shrimp and cook until pink.",
+          "Simmer until vegetables are tender.",
+          "Serve with rice."
+        ],
+        nutrition: { calories: 260, protein: "9g", fat: "6g", carbs: "32g" }
+      }
+    ];
+
+    // We'll store the filtered recipes in this variable
+    let currentFilteredRecipes = [];
+
+    // -----------------------------------------
+    // 2) ON PAGE LOAD
+    // -----------------------------------------
+    document.addEventListener("DOMContentLoaded", function() {
+      // Hide all containers except 'welcome'
+      document.querySelectorAll('.container').forEach(div => div.classList.add('hidden'));
+      document.getElementById('welcome').classList.remove('hidden');
+
+      // Populate the age dropdown (18 to 80, plus 80+)
+      let ageSelect = document.getElementById("age");
+      for (let i = 18; i <= 80; i++) {
+        let option = document.createElement("option");
+        option.value = i;
+        option.textContent = i;
+        ageSelect.appendChild(option);
+      }
+      let opt = document.createElement("option");
+      opt.value = "80+";
+      opt.textContent = "80+";
+      ageSelect.appendChild(opt);
+
+      // Hide the modal by default
+      closeNutrition();
+    });
+
+    // -----------------------------------------
+    // 3) NAVIGATION & LOGIN
+    // -----------------------------------------
+    function navigate(page) {
+      document.querySelectorAll('.container').forEach(div => div.classList.add('hidden'));
+      document.getElementById(page).classList.remove('hidden');
+      if (page === 'recipes') {
+        displayRecipes();
+      }
+    }
+
     function validateLogin() {
       let email = document.getElementById("email").value;
       let password = document.getElementById("password").value;
       if (email.includes("@gmail.com") && password.trim() !== "") {
-        document.getElementById("login").classList.add("hidden");
-        document.getElementById("allergy-filter").classList.remove("hidden");
+        navigate('age-selection');
       } else {
         alert("Please enter a valid Gmail and password.");
       }
     }
-  
-    function navigate(page) {
-      document.querySelectorAll('.container').forEach(div => div.classList.add('hidden'));
-      document.getElementById(page).classList.remove('hidden');
-      if (page === 'recipes') displayRecipes();
+
+    // -----------------------------------------
+    // 4) AGE & WEIGHT FLOW
+    // -----------------------------------------
+    function proceedToWeight() {
+      let age = document.getElementById("age").value;
+      if (!age) {
+        alert("Please select your age before proceeding.");
+        return;
+      }
+      localStorage.setItem("selectedAge", age);
+      navigate("weight-input");
     }
+
+    function proceedToStats() {
+      let weight = document.getElementById("weight").value;
+      if (!weight || weight <= 0) {
+        alert("Please enter a valid weight before proceeding.");
+        return;
+      }
+      localStorage.setItem("userWeight", weight);
+
+      let age = localStorage.getItem("selectedAge");
+      let avgWeight = getAverageWeight(age);
+      let dailyCal = getCaloricIntake(age);
+      document.getElementById("stats-text").textContent = 
+        "For your age (" + age + "), the average weight is " + avgWeight + 
+        " kg and the recommended daily caloric intake is " + dailyCal + " kcal.";
+      navigate("stats");
+    }
+
+    function getAverageWeight(age) {
+      age = (age === "80+") ? 80 : parseInt(age);
+      if (age < 30) return 70;
+      else if (age < 50) return 75;
+      else if (age < 70) return 72;
+      else return 68;
+    }
+
+    function getCaloricIntake(age) {
+      age = (age === "80+") ? 80 : parseInt(age);
+      if (age < 30) return 2500;
+      else if (age < 50) return 2300;
+      else if (age < 70) return 2100;
+      else return 1900;
+    }
+
+    // -----------------------------------------
+    // 5) ALLERGY / MEAT SELECTION
+    // -----------------------------------------
     function toggleSelection(element, storageKey, value) {
       if (element.classList.contains('selected')) {
         element.classList.remove('selected');
         localStorage.removeItem(storageKey);
       } else {
-        document.querySelectorAll(`.${storageKey}`).forEach(option => option.classList.remove('selected'));
+        document.querySelectorAll(`.${storageKey}`).forEach(opt => opt.classList.remove('selected'));
         element.classList.add('selected');
         localStorage.setItem(storageKey, value);
       }
     }
-  
+
+    // -----------------------------------------
+    // 6) DISPLAY RECIPES
+    // -----------------------------------------
     function displayRecipes() {
       let selectedAllergy = localStorage.getItem('selectedAllergy');
       let selectedMeat = localStorage.getItem('selectedMeat');
-  
-      let recipes = [
-  // Chicken Recipes
-  { name: "Chicken Adobo", meat: "chicken", ingredients: ["Chicken", "Soy sauce", "Vinegar", "Garlic", "Bay leaves"], allergies: [], procedure: "1. Marinate chicken in soy sauce and garlic. 2. Simmer with vinegar and bay leaves. 3. Serve with rice.", nutrition: { calories: 300, protein: 25, fat: 10, carbs: 5 } },
-  { name: "Tinolang Manok", meat: "chicken", ingredients: ["Chicken", "Ginger", "Papaya", "Malunggay"], allergies: [], procedure: "1. Sauté ginger and chicken. 2. Add water and simmer. 3. Add papaya and malunggay leaves.", nutrition: { calories: 280, protein: 27, fat: 8, carbs: 10 } },
-  { name: "Pancit Canton", meat: "chicken", ingredients: ["Egg noodles", "Chicken strips", "Cabbage", "Carrots", "Soy sauce"], allergies: ["gluten", "eggs"], procedure: "1. Sauté chicken with vegetables. 2. Add cooked noodles and soy sauce. 3. Toss and serve.", nutrition: { calories: 400, protein: 20, fat: 10, carbs: 50 } },
-  { name: "Arroz Caldo", meat: "chicken", ingredients: ["Chicken", "Rice", "Ginger", "Garlic", "Egg"], allergies: ["eggs"], procedure: "1. Sauté garlic, ginger, and chicken. 2. Add rice and broth, simmer until thick. 3. Serve with boiled egg.", nutrition: { calories: 350, protein: 22, fat: 8, carbs: 55 } },
-  { name: "Chicken Inasal", meat: "chicken", ingredients: ["Chicken", "Lemongrass", "Calamansi", "Soy sauce"], allergies: [], procedure: "1. Marinate chicken with calamansi and spices. 2. Grill until cooked. 3. Serve with rice and vinegar dip.", nutrition: { calories: 370, protein: 30, fat: 12, carbs: 8 } },
-  { name: "Chicken Curry", meat: "chicken", ingredients: ["Chicken", "Coconut milk", "Curry powder", "Potatoes"], allergies: ["coconut"], procedure: "1. Sauté chicken with curry powder. 2. Add coconut milk and potatoes. 3. Simmer until cooked.", nutrition: { calories: 400, protein: 30, fat: 15, carbs: 20 } },
-  { name: "Chicken Afritada", meat: "chicken", ingredients: ["Chicken", "Tomato sauce", "Potatoes", "Carrots", "Bell peppers"], allergies: [], procedure: "1. Sauté chicken. 2. Add tomato sauce and vegetables. 3. Simmer until cooked.", nutrition: { calories: 350, protein: 28, fat: 12, carbs: 25 } },
-  { name: "Chicken Pastel", meat: "chicken", ingredients: ["Chicken", "Mushrooms", "Carrots", "Cream"], allergies: ["dairy"], procedure: "1. Sauté chicken with mushrooms. 2. Add cream and simmer until thick.", nutrition: { calories: 420, protein: 30, fat: 18, carbs: 22 } },
-  { name: "Chicken Pochero", meat: "chicken", ingredients: ["Chicken", "Tomato sauce", "Banana", "Chorizo"], allergies: [], procedure: "1. Sauté chicken and chorizo. 2. Add tomato sauce and banana. 3. Simmer until thick.", nutrition: { calories: 380, protein: 32, fat: 14, carbs: 18 } },
-  { name: "Chicken Sotanghon Soup", meat: "chicken", ingredients: ["Chicken", "Sotanghon noodles", "Garlic", "Carrots"], allergies: ["gluten"], procedure: "1. Sauté garlic and chicken. 2. Add broth and sotanghon. 3. Simmer and serve.", nutrition: { calories: 290, protein: 22, fat: 6, carbs: 35 } },
-  
-  // Beef Recipes
-  { name: "Beef Mechado", meat: "beef", ingredients: ["Beef chunks", "Tomato sauce", "Potatoes", "Carrots"], allergies: [], procedure: "1. Brown beef chunks. 2. Simmer with tomato sauce and vegetables. 3. Serve warm.", nutrition: { calories: 450, protein: 30, fat: 15, carbs: 20 } },
-  { name: "Beef Bulalo", meat: "beef", ingredients: ["Beef shank", "Corn", "Cabbage", "Onions"], allergies: [], procedure: "1. Boil beef shank. 2. Add corn and onions. 3. Serve with cabbage.", nutrition: { calories: 500, protein: 40, fat: 20, carbs: 25 } },
-  { name: "Kare-Kare", meat: "beef", ingredients: ["Beef", "Peanut sauce", "Banana blossoms", "Eggplant"], allergies: ["peanuts"], procedure: "1. Cook beef in peanut sauce. 2. Add vegetables. 3. Serve with bagoong.", nutrition: { calories: 480, protein: 35, fat: 22, carbs: 15 } },
-  { name: "Beef Tapa", meat: "beef", ingredients: ["Beef", "Soy sauce", "Garlic", "Sugar"], allergies: [], procedure: "1. Marinate beef in soy sauce and garlic. 2. Fry until crispy. 3. Serve with rice and egg.", nutrition: { calories: 420, protein: 38, fat: 12, carbs: 20 } },
-  { name: "Beef Caldereta", meat: "beef", ingredients: ["Beef", "Tomato sauce", "Potatoes", "Bell peppers"], allergies: [], procedure: "1. Brown beef. 2. Simmer with tomato sauce and vegetables. 3. Serve hot.", nutrition: { calories: 460, protein: 32, fat: 18, carbs: 22 } },
-  { name: "Beef Pares", meat: "beef", ingredients: ["Beef", "Soy sauce", "Sugar", "Star anise"], allergies: [], procedure: "1. Slow cook beef with soy sauce and spices. 2. Serve with rice and broth.", nutrition: { calories: 500, protein: 35, fat: 18, carbs: 30 } },
-  { name: "Beef Steak (Bistek)", meat: "beef", ingredients: ["Beef", "Soy sauce", "Onions", "Calamansi"], allergies: [], procedure: "1. Marinate beef in soy sauce and calamansi. 2. Pan-fry and top with onions.", nutrition: { calories: 430, protein: 30, fat: 15, carbs: 10 } },
-  { name: "Beef Tapa", meat: "beef", ingredients: ["Beef", "Soy sauce", "Garlic", "Sugar"], allergies: [], procedure: "1. Marinate beef. 2. Pan-fry until cooked. 3. Serve with rice.", nutrition: { calories: 400, protein: 35, fat: 10, carbs: 15 } },
-  { name: "Bulalo Steak", meat: "beef", ingredients: ["Beef shank", "Butter", "Onions", "Gravy"], allergies: ["dairy"], procedure: "1. Grill beef shank. 2. Serve with buttery gravy and onions.", nutrition: { calories: 520, protein: 40, fat: 25, carbs: 12 } },
-  
-  // Pork Recipes
-  { name: "Pork Sinigang", meat: "pork", ingredients: ["Pork ribs", "Tamarind", "Radish", "Tomatoes"], allergies: [], procedure: "1. Boil pork ribs with tamarind. 2. Add vegetables. 3. Serve hot.", nutrition: { calories: 350, protein: 28, fat: 12, carbs: 15 } },
-  { name: "Lechon Kawali", meat: "pork", ingredients: ["Pork belly", "Salt", "Pepper", "Garlic"], allergies: [], procedure: "1. Boil pork belly with spices. 2. Deep-fry until crispy. 3. Serve with vinegar dip.", nutrition: { calories: 550, protein: 32, fat: 40, carbs: 5 } },
-  { name: "Bicol Express", meat: "pork", ingredients: ["Pork belly", "Coconut milk", "Chili peppers"], allergies: ["coconut"], procedure: "1. Sauté pork with spices. 2. Add coconut milk and chili. 3. Simmer until cooked.", nutrition: { calories: 480, protein: 25, fat: 30, carbs: 10 } },
-  { name: "Sisig", meat: "pork", ingredients: ["Pork face", "Onions", "Egg", "Chili peppers"], allergies: ["eggs"], procedure: "1. Grill pork face and chop. 2. Sauté with onions and chili. 3. Serve sizzling with egg.", nutrition: { calories: 500, protein: 38, fat: 35, carbs: 5 } },
-  { name: "Humba", meat: "pork", ingredients: ["Pork belly", "Soy sauce", "Sugar", "Banana blossoms"], allergies: [], procedure: "1. Sauté pork with soy sauce and sugar. 2. Simmer until tender. 3. Serve with rice.", nutrition: { calories: 490, protein: 26, fat: 28, carbs: 22 } },
-  { name: "Pork BBQ", meat: "pork", ingredients: ["Pork", "Soy sauce", "Sugar", "Garlic"], allergies: [], procedure: "1. Marinate pork in sauce. 2. Grill until cooked.", nutrition: { calories: 480, protein: 28, fat: 20, carbs: 15 } },
-  { name: "Crispy Pata", meat: "pork", ingredients: ["Pork leg", "Garlic", "Vinegar", "Salt"], allergies: [], procedure: "1. Boil pork leg until tender. 2. Deep-fry until crispy.", nutrition: { calories: 600, protein: 40, fat: 45, carbs: 5 } },
-  { name: "Pork Dinuguan", meat: "pork", ingredients: ["Pork", "Pig's blood", "Vinegar", "Garlic"], allergies: [], procedure: "1. Sauté pork with garlic. 2. Add pig’s blood and vinegar. 3. Simmer until thick.", nutrition: { calories: 460, protein: 32, fat: 22, carbs: 8 } },
-  { name: "Pork Guisantes", meat: "pork", ingredients: ["Pork", "Green peas", "Tomato sauce"], allergies: [], procedure: "1. Sauté pork. 2. Add tomato sauce and peas. 3. Simmer until thick.", nutrition: { calories: 390, protein: 30, fat: 12, carbs: 18 } },
-
-  // Seafood Recipes
-  { name: "Ginataang Hipon", meat: "seafood", ingredients: ["Shrimp", "Coconut milk", "Ginger"], allergies: ["seafood"], procedure: "1. Sauté garlic and ginger. 2. Add shrimp and coconut milk. 3. Simmer until cooked.", nutrition: { calories: 320, protein: 35, fat: 18, carbs: 8 } },
-  { name: "Sinigang na Hipon", meat: "seafood", ingredients: ["Shrimp", "Tamarind", "Kangkong"], allergies: ["seafood"], procedure: "1. Boil shrimp with tamarind and vegetables. 2. Serve hot.", nutrition: { calories: 280, protein: 30, fat: 5, carbs: 15 } },
-  { name: "Kinilaw na Tanigue", meat: "seafood", ingredients: ["Tanigue (Spanish mackerel)", "Vinegar", "Ginger", "Onions", "Chili"], allergies: [], procedure: "1. Marinate fish in vinegar and spices. 2. Serve fresh.", nutrition: { calories: 250, protein: 35, fat: 5, carbs: 5 } },
-  { name: "Adobong Pusit", meat: "seafood", ingredients: ["Squid", "Soy sauce", "Vinegar", "Garlic"], allergies: [], procedure: "1. Sauté squid with garlic. 2. Add soy sauce and vinegar. 3. Simmer until tender.", nutrition: { calories: 290, protein: 40, fat: 8, carbs: 6 } },
-  { name: "Grilled Salmon", meat: "seafood", ingredients: ["Salmon", "Lemon", "Garlic", "Olive oil"], allergies: [], procedure: "1. Marinate salmon with lemon and garlic. 2. Grill until cooked. 3. Serve with vegetables.", nutrition: { calories: 450, protein: 40, fat: 20, carbs: 5 } },
-  { name: "Garlic Butter Shrimp", meat: "seafood", ingredients: ["Shrimp", "Garlic", "Butter", "Parsley"], allergies: ["seafood", "dairy"], procedure: "1. Sauté shrimp with garlic and butter. 2. Garnish with parsley and serve.", nutrition: { calories: 380, protein: 35, fat: 18, carbs: 10 } },
-  { name: "Tuna Poke Bowl", meat: "seafood", ingredients: ["Tuna", "Soy sauce", "Sesame oil", "Avocado", "Rice"], allergies: ["soy"], procedure: "1. Marinate tuna in soy sauce and sesame oil. 2. Serve over rice with avocado.", nutrition: { calories: 420, protein: 38, fat: 15, carbs: 40 } },
-  { name: "Miso Glazed Cod", meat: "seafood", ingredients: ["Cod", "Miso paste", "Ginger", "Honey"], allergies: ["soy"], procedure: "1. Marinate cod in miso and honey. 2. Bake until flaky. 3. Serve with rice.", nutrition: { calories: 410, protein: 36, fat: 12, carbs: 25 } },
-  { name: "Seafood Paella", meat: "seafood", ingredients: ["Shrimp", "Mussels", "Rice", "Tomato", "Saffron"], allergies: ["seafood"], procedure: "1. Cook rice with tomatoes and saffron. 2. Add seafood and simmer.", nutrition: { calories: 480, protein: 42, fat: 14, carbs: 55 } },
-  
-  // Vegetable Recipes
-  { name: "Pinakbet", meat: "vegetables", ingredients: ["Eggplant", "Ampalaya", "Okra", "Tomato"], allergies: [], procedure: "1. Sauté vegetables with bagoong. 2. Simmer until cooked.", nutrition: { calories: 200, protein: 8, fat: 5, carbs: 30 } },
-  { name: "Laing", meat: "vegetables", ingredients: ["Taro leaves", "Coconut milk", "Chili peppers"], allergies: ["coconut"], procedure: "1. Cook taro leaves in coconut milk. 2. Simmer with spices.", nutrition: { calories: 310, protein: 10, fat: 20, carbs: 25 } },
-  { name: "Ginisang Monggo", meat: "vegetables", ingredients: ["Mung beans", "Garlic", "Tomatoes", "Ampalaya leaves"], allergies: [], procedure: "1. Boil mung beans until soft. 2. Sauté with garlic and tomatoes. 3. Add ampalaya leaves before serving.", nutrition: { calories: 280, protein: 18, fat: 5, carbs: 35 } },
-  { name: "Ginisang Sayote", meat: "vegetables", ingredients: ["Sayote", "Garlic", "Onions", "Soy sauce"], allergies: [], procedure: "1. Sauté sayote with garlic and onions. 2. Add soy sauce and simmer.", nutrition: { calories: 200, protein: 5, fat: 2, carbs: 40 } },
-  { name: "Vegetable Stir Fry", meat: "vegetables", ingredients: ["Broccoli", "Carrots", "Bell peppers", "Soy sauce"], allergies: ["soy"], procedure: "1. Stir-fry vegetables with soy sauce. 2. Serve hot.", nutrition: { calories: 250, protein: 8, fat: 5, carbs: 40 } },
-  { name: "Lentil Soup", meat: "vegetables", ingredients: ["Lentils", "Carrots", "Celery", "Garlic"], allergies: [], procedure: "1. Sauté garlic and vegetables. 2. Add lentils and simmer until soft.", nutrition: { calories: 300, protein: 20, fat: 3, carbs: 45 } },
-  { name: "Eggplant Parmesan", meat: "vegetables", ingredients: ["Eggplant", "Tomato sauce", "Mozzarella cheese", "Basil"], allergies: ["dairy"], procedure: "1. Bread and bake eggplant slices. 2. Layer with tomato sauce and cheese. 3. Bake until bubbly.", nutrition: { calories: 420, protein: 18, fat: 22, carbs: 40 } },
-  { name: "Quinoa Salad", meat: "vegetables", ingredients: ["Quinoa", "Cherry tomatoes", "Cucumber", "Olive oil"], allergies: [], procedure: "1. Cook quinoa. 2. Mix with chopped vegetables and olive oil. 3. Serve chilled.", nutrition: { calories: 350, protein: 12, fat: 10, carbs: 50 } },
-  { name: "Stuffed Bell Peppers", meat: "vegetables", ingredients: ["Bell peppers", "Rice", "Black beans", "Tomato sauce"], allergies: [], procedure: "1. Stuff bell peppers with rice and beans. 2. Bake until tender.", nutrition: { calories: 390, protein: 15, fat: 8, carbs: 55 } }
-];
-  
-     
-let filteredRecipes = recipes.filter(recipe => {
-      return recipe.meat === selectedMeat && (!recipe.allergies.includes(selectedAllergy) || selectedAllergy === "none");
-    });
-
-    let recipesContainer = document.getElementById("recipes-container");
-    recipesContainer.innerHTML = "";
-
-    if (filteredRecipes.length === 0) {
-      recipesContainer.innerHTML = "<p>No recipes match your selection.</p>";
-    } else {
-      filteredRecipes.forEach((recipe, index) => {
-        let recipeDiv = document.createElement("div");
-        recipeDiv.classList.add("recipe-card");
-
-        recipeDiv.innerHTML = `
-          <h2 class="recipe-title">🍽️ ${recipe.name}</h2>
-          <button class="view-details" onclick="toggleRecipeDetails(${index})">View Details</button>
-          <div id="recipe-details-${index}" class="recipe-details hidden">
-            <p><strong>🛒 Ingredients:</strong> ${recipe.ingredients.join(", ")}</p>
-            <p><strong>📝 Procedure:</strong> ${recipe.procedure}</p>
-            <p><strong>🔥 Calories:</strong> ${recipe.nutrition.calories} kcal</p>
-          </div>
-        `;
-        recipesContainer.appendChild(recipeDiv);
+      
+      // Filter recipes based on meat and allergy
+      currentFilteredRecipes = allRecipes.filter(recipe => {
+        return recipe.meat === selectedMeat &&
+               (!recipe.allergies.includes(selectedAllergy) || selectedAllergy === "none");
       });
+
+      let recipesContainer = document.getElementById("recipes-container");
+      recipesContainer.innerHTML = "";
+
+      if (currentFilteredRecipes.length === 0) {
+        recipesContainer.innerHTML = "<p>No recipes match your selection.</p>";
+      } else {
+        currentFilteredRecipes.forEach((recipe, index) => {
+          let recipeDiv = document.createElement("div");
+          recipeDiv.classList.add("recipe-card");
+
+          recipeDiv.innerHTML = `
+            <h2 class="recipe-title">🍽️ ${recipe.name}</h2>
+            <button class="button" onclick="openRecipe(${index})">View Details</button>
+          `;
+          recipesContainer.appendChild(recipeDiv);
+        });
+      }
     }
-  }
 
-  function toggleRecipeDetails(index) {
-    let detailsDiv = document.getElementById(`recipe-details-${index}`);
-    detailsDiv.classList.toggle("hidden");
-  }
-</script>
+    // -----------------------------------------
+    // 7) RECIPE PORTAL & MODAL
+    // -----------------------------------------
+    function openRecipe(index) {
+      let recipe = currentFilteredRecipes[index];
+      document.getElementById("portal-title").textContent = recipe.name;
+      
+      // Populate Ingredients
+      let ingList = document.getElementById("portal-ingredients");
+      ingList.innerHTML = "";
+      recipe.ingredients.forEach(item => {
+        let li = document.createElement("li");
+        li.textContent = item;
+        ingList.appendChild(li);
+      });
 
-<style>
-  .recipe-card {
-    background: white;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 15px;
-    text-align: left;
-    transition: transform 0.3s ease-in-out;
-  }
+      // Populate Procedure
+      let procList = document.getElementById("portal-procedure");
+      procList.innerHTML = "";
+      recipe.procedure.forEach(step => {
+        let li = document.createElement("li");
+        li.textContent = step;
+        procList.appendChild(li);
+      });
 
-  .recipe-card:hover {
-    transform: scale(1.02);
-  }
+      // Store current recipe in localStorage for the modal
+      localStorage.setItem("currentRecipe", JSON.stringify(recipe));
 
-  .recipe-title {
-    font-size: 18px;
-    color: #070808;
-    margin-bottom: 10px;
-  }
+      // Show the recipe portal, hide the recipes list
+      document.getElementById("recipes").classList.add("hidden");
+      document.getElementById("recipe-portal").classList.remove("hidden");
+    }
 
-  .view-details {
-    background: #28a745;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background 0.3s;
-  }
+    // Show the nutritional modal
+    function showNutrition() {
+      let recipe = JSON.parse(localStorage.getItem("currentRecipe"));
+      let details = document.getElementById("nutrition-details");
+      details.innerHTML = `
+        <p><strong>Calories:</strong> ${recipe.nutrition.calories} kcal</p>
+        <p><strong>Protein:</strong> ${recipe.nutrition.protein}</p>
+        <p><strong>Fat:</strong> ${recipe.nutrition.fat}</p>
+        <p><strong>Carbs:</strong> ${recipe.nutrition.carbs}</p>
+      `;
 
-  .view-details:hover {
-    background: #218838;
-  }
+      document.getElementById("nutritional-modal").classList.remove("hidden");
+    }
 
-  .recipe-details {
-    background: #f8f9fa;
-    padding: 10px;
-    border-radius: 5px;
-    margin-top: 10px;
-    transition: max-height 0.3s ease-in-out;
-  }
+    // Close the nutritional modal
+    function closeNutrition() {
+      document.getElementById("nutritional-modal").classList.add("hidden");
+    }
+  </script>
 
-  .hidden {
-    display: none;
-  }
-</style>
-
+</body>
+</html>
